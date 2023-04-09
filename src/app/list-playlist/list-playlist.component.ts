@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SpotifyService } from '../services/spotify.service';
 
 @Component({
   selector: 'app-list-playlist',
@@ -8,10 +9,21 @@ import { Component, OnInit } from '@angular/core';
 export class ListPlaylistComponent implements OnInit {
 
   showModal: boolean = false;
+  playlists: any[] = [];
 
-  constructor() { }
+  newPlaylistName: string | undefined;
+
+  constructor(private spotifyService: SpotifyService) { }
 
   ngOnInit(): void {
+    const storedPlaylists = localStorage.getItem('playlists');
+    if (storedPlaylists) {
+      this.playlists = JSON.parse(storedPlaylists);
+    } else {
+      this.spotifyService.getPlaylists().subscribe(playlists => {
+        this.playlists = playlists;
+      });
+    }
   }
 
   openModal() {
@@ -20,5 +32,13 @@ export class ListPlaylistComponent implements OnInit {
 
   closeModal() {
     this.showModal = false;
+  }
+
+  createPlaylist(name: string) {
+    this.spotifyService.createPlaylist(name).subscribe(playlist => {
+      this.playlists = [...this.playlists, playlist];
+      localStorage.setItem('playlists', JSON.stringify(this.playlists));
+      this.closeModal();
+    });
   }
 }

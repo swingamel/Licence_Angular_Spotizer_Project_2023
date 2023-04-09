@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {from, map, Observable} from 'rxjs';
+import {HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import {from, map, tap, Observable, switchMap, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,10 @@ export class SpotifyService {
   }
   getSong(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/songs/${id}`);
+  }
+
+  getPlaylists(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/playlists`);
   }
 
 
@@ -85,6 +89,49 @@ export class SpotifyService {
       params = params.set('page', page.toString());
     }
     return this.http.get<Album[]>(this.apiUrls, { params });
+  }
+
+  createPlaylist(name: string): Observable<any> {
+    const playlistData = {
+      name: name
+    };
+
+    return this.http.post(`${this.apiUrl}/playlists`, playlistData);
+  }
+
+  addSongToPlaylist(playlistId: number, songId: number): Observable<any> {
+    const songUri = `${this.apiUrl}/songs/${songId}`;
+    const patchData = {
+      songs: [songUri]
+    };
+
+    return this.http.patch(`${this.apiUrl}/playlists/${playlistId}`, patchData, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    }).pipe(
+      tap(() => {
+        const storedPlaylistStr = localStorage.getItem(`playlist-${playlistId}`);
+        if (storedPlaylistStr) {
+          const storedPlaylist = JSON.parse(storedPlaylistStr);
+          storedPlaylist.songs.push(songUri);
+          localStorage.setItem(`playlist-${playlistId}`, JSON.stringify(storedPlaylist));
+        }
+      })
+    );
+  }
+
+  getPlaylist(id: number): Observable<any> {
+    const storedPlaylist = localStorage.getItem(`playlist-${id}`);
+    if (storedPlaylist) {
+      return of(JSON.parse(storedPlaylist));
+    } else {
+      return this.http.get(`${this.apiUrl}/playlists/${id}`).pipe(
+        tap((playlistData) => {
+          localStorage.setItem(`playlist-${id}`, JSON.stringify(playlistData));
+        })
+      );
+    }
   }
 }
 
