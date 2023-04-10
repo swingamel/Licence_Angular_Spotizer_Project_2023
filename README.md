@@ -42,4 +42,4 @@ ng serve
 
 7. Ouvrez votre navigateur et accédez à \`http://localhost:4200/`. L'application sera automatiquement rechargée si vous modifiez l'un des fichiers source.
 
-Et voilà ! Vous avez maintenant installé et démarré le projet Angular Spotizer sur votre machine locale. N'hésitez pas à explorer le code et à apporter des modifications si nécessaire.
+Et voilà ! Vous avez maintenant installé et démarré le projet Angular Spotizer sur votre machine locale.
