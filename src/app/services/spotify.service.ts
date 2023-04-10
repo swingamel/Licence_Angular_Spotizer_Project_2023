@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import {from, map, tap, Observable, switchMap, of} from 'rxjs';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {catchError, forkJoin, from, map, Observable, of, switchMap, takeWhile, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,6 @@ import {from, map, tap, Observable, switchMap, of} from 'rxjs';
 export class SpotifyService {
 
   private apiUrl = 'https://mmi.unilim.fr/~morap01/L250/public/index.php/api';
-  private apiUrls = 'https://mmi.unilim.fr/~morap01/L250/public/index.php/api/albums';
 
   constructor(private http: HttpClient) {
   }
@@ -25,10 +24,6 @@ export class SpotifyService {
   }
   getSong(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/songs/${id}`);
-  }
-
-  getPlaylists(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/playlists`);
   }
 
 
@@ -56,9 +51,7 @@ export class SpotifyService {
     );
   }
 
-
   searchAlbums(query: string): Observable<any> {
-    console.log('Search query:', query); // Ajout de l'instruction console.log
     return this.http.get(`${this.apiUrl}/albums?title=${query}`).pipe(
       map((response: any) => {
           if (Array.isArray(response)) {
@@ -70,25 +63,55 @@ export class SpotifyService {
       ));
   }
 
-  searchPlaylists(query: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/playlists?name=${query}`).pipe(
-      map((response: any) => {
-          if (Array.isArray(response)) {
-            return response;
-          } else {
-            return [response];
-          }
-        }
-      ));
-  }
+  /*  searchPlaylists(keyword: string): Observable<Playlist[]> {
+      const url = `${this.apiUrl}/playlists?q=${keyword}`;
+      return this.http.get<Playlist[]>(url);
+    }*/
 
-  getArtistAlbums(artistName: string, page?: number): Observable<Album[]> {
-    let params = new HttpParams()
-      .set('artist.name', artistName);
+  getArtistAlbums(artistId: number, page?: number): Observable<Album[]> {
+    let params = new HttpParams().set('artistId', artistId.toString());
     if (page) {
       params = params.set('page', page.toString());
     }
-    return this.http.get<Album[]>(this.apiUrls, { params });
+    return this.http.get<Album[]>(`${this.apiUrl}/albums`, { params });
+  }
+
+  getAllPlaylists(searchTerm?: string): Observable<any> {
+    let id = 1;
+    const playlists: any[] = [];
+
+    return new Observable(observer => {
+      const getPlaylist = () => {
+        let params = new HttpParams();
+        if (searchTerm) {
+          params = params.append('q', searchTerm);
+        }
+        this.http.get(`${this.apiUrl}/playlists/${id}`, { params }).pipe(
+          map((response: any) => {
+            if (!searchTerm || response.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+              playlists.push(response);
+            }
+            id++;
+            if (response.id) {
+              // continue the loop
+              getPlaylist();
+            } else {
+              observer.next(playlists);
+              observer.complete();
+            }
+          }),
+          catchError(error => {
+            // stop the loop and return the playlists that have been fetched so far
+            observer.next(playlists);
+            observer.complete();
+            return [];
+          }),
+          takeWhile(() => id < 1000) // limit the loop to a maximum of 1000 iterations
+        ).subscribe();
+      };
+
+      getPlaylist();
+    });
   }
 
   createPlaylist(name: string): Observable<any> {
@@ -133,10 +156,34 @@ export class SpotifyService {
       );
     }
   }
+  getPlaylists(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/playlists`);
+  }
 }
 
 export interface Album {
   id: number;
   title: string;
   image: string;
+  artist: Artist;
+}
+
+export interface Playlist {
+  id: number;
+  name: string;
+  songs: Song[];
+}
+
+export interface Song {
+  id: number;
+  title: string;
+  length: number;
+  youtube : string;
+}
+
+export interface Artist {
+  id: number;
+  name: string;
+  songs: Song[];
+  albums: Album[];
 }

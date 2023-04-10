@@ -8,18 +8,21 @@ import {Album, SpotifyService} from '../services/spotify.service';
   styleUrls: ['./artist-albums.component.css']
 })
 export class ArtistAlbumsComponent implements OnInit {
-  artistName = 'Liliana Collins';
+  artistId: number = 0;
   albums: Album[] = [];
 
-
-  constructor(private albumService: SpotifyService, private route: ActivatedRoute) {
-    this.albumService.getArtistAlbums(this.artistName)
-      .subscribe(albums => this.albums = albums);
-  }
+  constructor(private albumService: SpotifyService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    }
-
+    this.artistId = Number(this.route.snapshot.paramMap.get('id'));
+    this.albumService.getArtistAlbums(this.artistId)
+      .subscribe(albums => {
+        this.albums = albums.filter(album => {
+          return album.id.toString().startsWith(this.artistId.toString());
+        });
+        console.log('Albums:', this.albums);
+      });
+  }
 
   /*ngOnInit() {
     this.route.paramMap.subscribe(params => {

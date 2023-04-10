@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Component} from '@angular/core';
-import {SpotifyService} from "../services/spotify.service";
+import {Playlist, SpotifyService} from "../services/spotify.service";
 import {Router} from '@angular/router';
 
 
@@ -11,12 +11,10 @@ import {Router} from '@angular/router';
 })
 export class SearchComponent {
   searchText: string = '';
-  searchQuery: string = 'title';
   songs: any[] = [];
   artists: any[] = [];
   albums: any[] = [];
-  playlists: any[] = [];
-
+  playlists: Playlist[] = [];
   constructor(private spotifyService: SpotifyService, private http: HttpClient, private router: Router) {
   }
 
@@ -30,26 +28,26 @@ export class SearchComponent {
   search() {
     // Appel à la méthode de recherche de chansons
     this.spotifyService.searchSongs(this.searchText).subscribe((response: any) => {
-      console.log('Search response (songs):', response);
       this.songs = response;
     });
 
     // Appel à la méthode de recherche d'artistes
     this.spotifyService.searchArtists(this.searchText).subscribe((response: any) => {
-      console.log('Search response (artists):', response);
       this.artists = response;
     });
 
     // Appel à la méthode de recherche d'albums
     this.spotifyService.searchAlbums(this.searchText).subscribe((response: any) => {
-      console.log('Search response (albums):', response);
       this.albums = response;
     });
 
     // Appel à la méthode de recherche de playlists
-    this.spotifyService.searchPlaylists(this.searchText).subscribe((response: any) => {
-      console.log('Search response (playlists):', response);
-      this.playlists = response;
-    });
+    /*    this.spotifyService.getAllPlaylists(this.searchText).subscribe((playlists: any[]) => {
+            this.playlists = playlists;
+          },
+          (error) => {
+            console.log('Error searching playlists');
+          }*/
+
   }
 }

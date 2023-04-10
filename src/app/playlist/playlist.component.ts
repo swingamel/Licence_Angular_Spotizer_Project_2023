@@ -52,11 +52,15 @@ export class PlaylistComponent implements OnInit {
 
   searchSongs() {
     this.spotifyService.searchSongs(this.searchQuery).subscribe(results => {
+      console.log('Search results:', results);
       this.searchResults = this.searchResults.concat(results);
     });
   }
 
+
   addSongToPlaylist(song: any) {
+    console.log('Adding song to playlist:', song);
+
     if (!this.playlist || !this.playlist.id) {
       console.error('Playlist ID not found');
       return;
