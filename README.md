@@ -1,27 +1,45 @@
 # Spotizer
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.5.
+## Présentation
 
-## Development server
+Spotizer est un projet réalisé par deux étudiants de l'IUT de Limoges, Mélanie DEBEAULIEU et Clément LE CARO, dans le cadre de leurs études. Le projet est développé en utilisant le framework Angular et le framework CSS Tailwind CSS. Le site est hébergé sur GitHub Pages.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Installation et démarrage du projet
 
-## Code scaffolding
+Pour installer et démarrer le projet Angular, veuillez suivre les étapes ci-dessous :
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Assurez-vous d'avoir installé Node.js et npm sur votre système. Vous pouvez les télécharger et les installer à partir de [ici](https://nodejs.org/).
 
-## Build
+2. Installez Angular CLI globalement en exécutant la commande suivante dans votre terminal :
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+npm install -g @angular/cli
+```
 
-## Running unit tests
+3. Clonez le dépôt GitHub du projet sur votre machine locale en exécutant la commande suivante :
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```
+git clone https://github.com/iSwamb/spotizer.git
+```
 
-## Running end-to-end tests
+4. Accédez au répertoire du projet :
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
+cd spotizer
+```
 
-## Further help
+5. Installez toutes les dépendances nécessaires en exécutant la commande suivante :
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+npm install
+```
+
+6. Pour démarrer l'application en mode développement, exécutez la commande suivante :
+
+```
+ng serve
+```
+
+7. Ouvrez votre navigateur et accédez à \`http://localhost:4200/`. L'application sera automatiquement rechargée si vous modifiez l'un des fichiers source.
+
+Et voilà ! Vous avez maintenant installé et démarré le projet Angular Spotizer sur votre machine locale. N'hésitez pas à explorer le code et à apporter des modifications si nécessaire.
